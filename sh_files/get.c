@@ -15,8 +15,10 @@ int main(__attribute__((unused))int argc,__attribute__((unused)) char *argv[], c
 	ssize_t nread;
 	FILE *stream = stdin;
 	char *token;
-	char *args[10];
+	char *args[10000];
 	int argCount , i;
+	struct stat buffer;
+
 
 	if (isatty(STDIN_FILENO))
 	{
@@ -33,54 +35,52 @@ int main(__attribute__((unused))int argc,__attribute__((unused)) char *argv[], c
 			if (args[argCount] == NULL)
 			{
 				perror("memory allocation failed");
-				for (i = 0; i < argCount; i++)
-				{
-					free(args[i]);
-				}
-				free(command);
 				exit(EXIT_FAILURE);
 			}
 			argCount++;
 			token = strtok(NULL, " \n");
 		}
 		args[argCount] = NULL;
-		child_pid = fork();
-
-		if (child_pid < 0)
+		if (stat(command, &buffer) == 0)
 		{
-			perror("Fork failed");
-			exit(EXIT_FAILURE);
-		}
-
-		if (child_pid == 0)
-		{
-			if (execve(args[0], args, envp) == -1)
+			printf("1");
+			child_pid = fork();
+			if (child_pid < 0)
 			{
-				perror("Execve failed");
+				perror("Fork failed");
 				exit(EXIT_FAILURE);
 			}
-		}
-		else
-		{
-			wait(&status);
-			if (WIFEXITED(status))
-				printf("$ ");
-			else
-				perror("Child process did not exit normally");
-			for (i = 0; i < argCount; i++)
+
+			if (child_pid == 0)
 			{
-				strcpy(args[i], "");
+				if (execve(args[0], args, envp) == -1)
+				{
+					perror("Execve failed");
+					exit(EXIT_FAILURE);
+				}
+			}
+			else
+			{
+				wait(&status);
+				if (!WIFEXITED(status))
+					perror("Child process did not exit normally");
+				for (i = 0; i < argCount; i++)
+				{
+					free(args[i]);
+					args[i] = NULL;
+				}
 			}
 		}
 
 
+		if (isatty(STDIN_FILENO))
+		{
+			printf("$ ");
+			fflush(stdout);
+		}
 
 	}
-	if (isatty(STDIN_FILENO))
-	{
-		printf("$ ");
-		fflush(stdout);
-	}
+	free(command);
 
 	return (0);
 }
