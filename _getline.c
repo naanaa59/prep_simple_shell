@@ -1,41 +1,49 @@
-#include <stdlib.h>
-#include <stdio.h>
+#include "sh.h"
 
 
-ssize_t _getline(char **line, size_t *n, FILE *file)
+#define BUFFER_SIZE 1024
+/**
+ * _getline - custumizes version of getline
+ *
+ * @line: pointer to the line to read
+ *
+ * @n: size of the line
+ *
+ * @file: the file to read from
+ *
+ * Return: size of the line
+ */
+ssize_t _getline(char **line, size_t *n)
 {
-	ssize_t nread = 0;
-	int c;
+	ssize_t line_size = 0;
+	size_t buffer_size = 0;
 
-	if (file == NULL)
-		return -1;
 
-	if (*line == NULL || *n == 0) {
-		*n = 1024;
-		*line = malloc(*n);
+	if (line == NULL || n == NULL)
+	{	perror(" line or n are null ");
+		return (-1);
+	}
+	if(*line == NULL || *n == 0)
+	{
+		buffer_size = BUFFER_SIZE;
+		*line = (char *)malloc(buffer_size);
 		if (*line == NULL)
-			return -1;
-	}
-
-	while ((c = fgetc(file)) != EOF) {
-		(*line)[nread++] = c;
-		if (nread >= *n) {
-			*n *= 2;
-			*line = realloc(*line, *n);
-			if (*line == NULL)
-				return -1;
+		{
+			perror("memory allocation failed");
+			return (-1);
 		}
-		if (c == '\n') {
-			break;
-		}
+		*n = buffer_size;
 	}
+		else
+			buffer_size = *n;
+	line_size = read(STDIN_FILENO, *line, buffer_size - 1);
+	if (line_size == -1)
+	{
+		perror("read function failed");
+		return (-1);
+	}
+	(*line)[line_size] = '\0';
 
-	if (c == EOF && nread == 0)
-		return -1;
-	(*line)[nread++] = '\n';
-	(*line)[nread] = '\0';
-
-	return nread - 1;
+	return (line_size);
 
 }
-
