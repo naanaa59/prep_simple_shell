@@ -1,6 +1,6 @@
 #include "sh.h"
 
-void t(void);
+
 void free_grid(char **grid, int size);
 
 /**
@@ -12,30 +12,26 @@ void free_grid(char **grid, int size);
 int main(__attribute__((unused))int argc, char *argv[], char *envp[])
 {
 	char *command = NULL, *token;
+	char *args[10000];
+	int argCount, j, lineIndex = 1, found = 0,
+	 status = 0, alpha = 0, exit_arg_num, exit_status = 0;
+	struct stat buffer;
 	pid_t child_pid;
 	size_t len = 0;
-	int status;
 	ssize_t nread;
 	FILE *stream = stdin;
-	char *args[10000];
-	int argCount, j, lineIndex = 1, exit_arg = 0, exit_error = 0;
-	int found = 0;
-	struct stat buffer;
-
-	if (isatty(STDIN_FILENO))
-	{
-		printf("$ ");
-		fflush(stdout);
-	}
+	
+	
+	
+	interactive_mode();
 	while ((nread = getline(&command,&len, stream)) != -1)
 	{
 		argCount = 0;
 		token = strtok(command, " \n");
+			
 		while(token != NULL)
-		{
-			/*if (stat(token, &buffer) == 0)*/
-			args[argCount] = strdup(token);
-			/*else*/
+		{	
+			args[argCount] = _strdup(token);
 			if (args[argCount] == NULL)
 			{
 				perror("memory allocation failed");
@@ -45,22 +41,50 @@ int main(__attribute__((unused))int argc, char *argv[], char *envp[])
 			token = strtok(NULL, " \n");
 		}
 		args[argCount] = NULL;
-		if (strcmp(args[0], "exit") == 0)
+		if (args[0] != NULL && _strcmp(args[0], "env") == 0)
+		{
+			print_env(envp);
+		}
+		else if (args[0] != NULL && _strcmp(args[0], "exit") == 0)
 		{
 			if (argCount > 1)
 			{
-				exit_arg = atoi(args[1]);
-				free(command);
-				free_grid(args, argCount);
-				exit(exit_arg);
+				alpha = _isalpha_string(args[1]);
+				if (alpha == 1)
+				{
+					custum_perror_exit(argv[0], lineIndex, "exit: Illegal number: ", args[1]);
+					free(command);
+				    free_grid(args, argCount);
+					exit(2);
+				}
+				else
+				{
+					exit_arg_num = _atoi(args[1]);
+						if (exit_arg_num < 0)
+						{
+							custum_perror_exit(argv[0], lineIndex, "exit: Illegal number: ", args[1]);
+							free(command);
+				    		free_grid(args, argCount);
+							exit(2);
+						}
+						else
+						{
+							free(command);
+				    		free_grid(args, argCount);
+							exit(exit_arg_num % 256);
+						}
+				}
 			}
 			else
 			{
 				free(command);
 				free_grid(args, argCount);
-				exit(exit_error);
+				exit_status = status >> 8;
+				exit(exit_status);
 			}
 		}
+		else
+		{
 		for (j = 0; j < argCount; j++)
 		{
 			if (stat(args[j], &buffer) == 0)
@@ -77,56 +101,38 @@ int main(__attribute__((unused))int argc, char *argv[], char *envp[])
 					if (execve(args[j], args, envp) == -1)
 					{
 						perror("Execve failed");
-						exit(2);
+						exit(EXIT_FAILURE);
 					}
 				}
 				else
 				{
 					wait(&status);
-						/*exit_error = status >> 8;*/
 					if (WIFEXITED(status))
 					{
-						/*perror("Child process did not exit normally");*/
 						found = 1;
 						break;
 					}
 				}
 			}
-			else
-			{
-				exit_error = 2;
-			}
+			
 		}
+		
 		if (!found && args[0] != NULL)
 		{
-			fprintf(stderr, "%s: %d: %s: command not found\n", argv[0], lineIndex, args[0]);
+			custum_perror(argv[0], lineIndex, ": not found", args[0]);
 		}
-		/*for (i = 0; i < argCount; i++)
-		{
-			free(args[i]);
-			args[i] = NULL;
-		}*/
+		}
 		free_grid(args, argCount);
 		lineIndex++;
-
-		if (isatty(STDIN_FILENO))
-		{
-			printf("$ ");
-			fflush(stdout);
-		}
+		interactive_mode();
+		
 
 	}
 	free(command);
 
 	return (0);
 }
-/**
- * t - t
- */
 
-void t (void)
-{
-}
 /**
  * free_grid - frees a 2 d array
  *

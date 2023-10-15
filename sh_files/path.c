@@ -8,7 +8,7 @@
  * Return: 0 on success or -1 on failure
  */
 
-char *full_command(const char *filename)
+char *full_command(char *filename)
 {
 	char *path_var;
 	char *path_dir;
@@ -24,16 +24,16 @@ char *full_command(const char *filename)
 	path_dir = strtok(path_var, ":");
 	while (path_dir != NULL)
 	{
-		full_path = malloc(strlen(path_dir) + 1 + strlen(filename) + 1);
+		full_path = malloc(_strlen(path_dir) + 1 + _strlen(filename) + 1);
 		if (full_path == NULL)
 			return (NULL);
-		strcpy(full_path, path_dir);
-		if(full_path[strlen(path_dir) - 1] != '/')
-			strcat(full_path, "/");
-		strcat(full_path, filename);
-		if(stat(full_path, &buffer) != 0)
-			return (NULL);
+		_strcpy(full_path, path_dir);
+		if(full_path[_strlen(path_dir) - 1] != '/')
+			_strcat(full_path, "/");
+		_strcat(full_path, filename);
+		if(stat(full_path, &buffer) == 0)
+			return (full_path);
 		path_dir = strtok(NULL, ":");
 	}
-	return (full_path);
+	return (NULL);
 }
