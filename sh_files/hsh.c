@@ -10,22 +10,19 @@ void free_grid(char **grid, int size);
  *
  * @argv: arguments vector
  *
- * @envp: environ variable
- *
  * Return: 0
  */
 
-int main(__attribute__((unused))int argc, char *argv[], char *envp[])
+int main(__attribute__((unused))int argc, char *argv[])
 {
 	char *command = NULL, *token;
 	char *args[10000];
 	int argCount, lineIndex = 1;
 	int status = 0;
-	/*struct stat buffer;*/
-	/*pid_t child_pid;*/
 	size_t len = 0;
 	ssize_t nread;
 	FILE *stream = stdin;
+	extern char **environ; 
 
 
 
@@ -48,26 +45,27 @@ int main(__attribute__((unused))int argc, char *argv[], char *envp[])
 		args[argCount] = NULL;
 		if (args[0] != NULL && _strcmp(args[0], "env") == 0)
 		{
-			print_env(envp);
+			print_env(environ);
 		}
 		else if (args[0] != NULL && _strcmp(args[0], "exit") == 0)
 		{
 			exit_command(argv, args, argCount, lineIndex, command, &status);
 		}
-		else if (args[0] != NULL)
+		else if (args[0] != NULL && args[1] != NULL && args[2] != NULL &&  _strcmp(args[0], "setenv") == 0)
 		{
-			status = exec_command(args, envp, argv, lineIndex);
-			
-			/*if (!found && args[0] != NULL)
-			{
-				custom_perror(argv[0], lineIndex, ": not found", args[0]);
-			}*/
+			setenv(args[1], args[2], 1);
+		}
+		else if (args[0] != NULL && args[1] != NULL && _strcmp(args[0], "unsetenv") == 0)
+		{
+			unsetenv(args[1]);
+		}
+		else if (args[0] != NULL && _strcmp(args[0], "setenv") != 0  && _strcmp(args[0], "unsetenv") != 0)
+		{
+			status = exec_command(args, environ, argv, lineIndex);
 		}
 		free_grid(args, argCount);
 		lineIndex++;
 		interactive_mode();
-
-
 	}
 	free(command);
 	exit(status);
