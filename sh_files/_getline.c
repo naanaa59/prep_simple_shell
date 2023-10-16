@@ -15,17 +15,17 @@
  */
 ssize_t _getline(char **line, size_t *n, FILE *file)
 {
-	
+
 	size_t buffer_size = 0;
-    ssize_t line_size;
-	
+	ssize_t line_size;
+
 
 
 	if (line == NULL || n == NULL)
 	{	perror(" line or n are null ");
 		return (-1);
 	}
-	if(*line == NULL || *n == 0)
+	if (*line == NULL || *n == 0)
 	{
 		/*buffer_size = BUFFER_SIZE;*/
 		*line = (char *)malloc(buffer_size);
@@ -36,18 +36,18 @@ ssize_t _getline(char **line, size_t *n, FILE *file)
 		}
 		*n = buffer_size;
 	}
-		else
-			buffer_size = *n;
+	else
+		buffer_size = *n;
 	/*line_size = read(file, *line, buffer_size - 1);*/
-    fgets(*line, buffer_size, file);
-   
+	fgets(*line, buffer_size, file);
+
 
 	line_size = _strlen(*line);
 	if (line_size > 0 && (*line)[line_size - 1] == '\n')
-    {
-        (*line)[line_size - 1] = '\0';
-        line_size--;
-    }
+	{
+		(*line)[line_size - 1] = '\0';
+		line_size--;
+	}
 	return (line_size);
 
 }

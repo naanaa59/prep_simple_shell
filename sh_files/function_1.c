@@ -50,7 +50,7 @@ int _strlen(char *s)
  * _puts - prints a string, followed by a new line, to stdout.
  *
  * @str: the given string to print
- * 
+ *
  * @std: the standard output
  */
 void _puts(int std, char *str)

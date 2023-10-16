@@ -11,15 +11,19 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 
+
+
 /*custom functions*/
 char *full_command(char *filename);
 void interactive_mode(void);
-void custum_perror(char *program_name, int line, char *prefix, char *command);
-void custum_perror_exit(char *program_name, int line, char *prefix, char *command);
+void custom_perror(char *program_name, int line, char *prefix, char *command);
+void custom_perror_exit(char *program_name, int line, char *prefix, char *command);
 void print_env(char **env);
 char *custom_strtok(char *str, const char *delimiters);
 ssize_t _getline(char **line, size_t *n, FILE *file);
-
+void exit_command(char *argv[], char *args[], int argCount, int lineIndex, char *command, int *status);
+int exec_command(char *args[], char *envp[], char *argv[], int lineIndex);
+void _str_replace(char **origin, char *new);
 
 
 /*string functions*/

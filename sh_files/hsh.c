@@ -6,6 +6,12 @@ void free_grid(char **grid, int size);
 /**
  * main - simple shell
  *
+ * @argc: arguments count
+ *
+ * @argv: arguments vector
+ *
+ * @envp: environ variable
+ *
  * Return: 0
  */
 
@@ -13,24 +19,23 @@ int main(__attribute__((unused))int argc, char *argv[], char *envp[])
 {
 	char *command = NULL, *token;
 	char *args[10000];
-	int argCount, j, lineIndex = 1, found = 0,
-	 status = 0, alpha = 0, exit_arg_num, exit_status = 0;
-	struct stat buffer;
-	pid_t child_pid;
+	int argCount, lineIndex = 1;
+	int status = 0;
+	/*struct stat buffer;*/
+	/*pid_t child_pid;*/
 	size_t len = 0;
 	ssize_t nread;
 	FILE *stream = stdin;
-	
-	
-	
+
+
+
 	interactive_mode();
-	while ((nread = getline(&command,&len, stream)) != -1)
+	while ((nread = getline(&command, &len, stream)) != -1)
 	{
 		argCount = 0;
 		token = strtok(command, " \n");
-			
-		while(token != NULL)
-		{	
+		while (token != NULL)
+		{
 			args[argCount] = _strdup(token);
 			if (args[argCount] == NULL)
 			{
@@ -47,89 +52,25 @@ int main(__attribute__((unused))int argc, char *argv[], char *envp[])
 		}
 		else if (args[0] != NULL && _strcmp(args[0], "exit") == 0)
 		{
-			if (argCount > 1)
-			{
-				alpha = _isalpha_string(args[1]);
-				if (alpha == 1)
-				{
-					custum_perror_exit(argv[0], lineIndex, "exit: Illegal number: ", args[1]);
-					free(command);
-				    free_grid(args, argCount);
-					exit(2);
-				}
-				else
-				{
-					exit_arg_num = _atoi(args[1]);
-						if (exit_arg_num < 0)
-						{
-							custum_perror_exit(argv[0], lineIndex, "exit: Illegal number: ", args[1]);
-							free(command);
-				    		free_grid(args, argCount);
-							exit(2);
-						}
-						else
-						{
-							free(command);
-				    		free_grid(args, argCount);
-							exit(exit_arg_num % 256);
-						}
-				}
-			}
-			else
-			{
-				free(command);
-				free_grid(args, argCount);
-				exit_status = status >> 8;
-				exit(exit_status);
-			}
+			exit_command(argv, args, argCount, lineIndex, command, &status);
 		}
-		else
+		else if (args[0] != NULL)
 		{
-		for (j = 0; j < argCount; j++)
-		{
-			if (stat(args[j], &buffer) == 0)
-			{
-				child_pid = fork();
-				if (child_pid < 0)
-				{
-					perror("Fork failed");
-					exit(EXIT_FAILURE);
-				}
-
-				if (child_pid == 0)
-				{
-					if (execve(args[j], args, envp) == -1)
-					{
-						perror("Execve failed");
-						exit(EXIT_FAILURE);
-					}
-				}
-				else
-				{
-					wait(&status);
-					if (WIFEXITED(status))
-					{
-						found = 1;
-						break;
-					}
-				}
-			}
+			status = exec_command(args, envp, argv, lineIndex);
 			
-		}
-		
-		if (!found && args[0] != NULL)
-		{
-			custum_perror(argv[0], lineIndex, ": not found", args[0]);
-		}
+			/*if (!found && args[0] != NULL)
+			{
+				custom_perror(argv[0], lineIndex, ": not found", args[0]);
+			}*/
 		}
 		free_grid(args, argCount);
 		lineIndex++;
 		interactive_mode();
-		
+
 
 	}
 	free(command);
-
+	exit(status);
 	return (0);
 }
 

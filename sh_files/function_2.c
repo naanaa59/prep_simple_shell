@@ -24,14 +24,14 @@ int _strcmp(char *s1, char *s2)
 
 	}
 
-		return (s1[i] - s2[i]);
+	return (s1[i] - s2[i]);
 }
 /**
  * _putchar - writes the character c to stdout
  * @c: The character to print
  *
  * @std: the standard output
- * 
+ *
  * Return: On success 1.
  * On error, -1 is returned, and errno is set appropriately.
  */
@@ -56,10 +56,13 @@ int _isalpha(int c)
 }
 /**
  * interractive_mode - create an interactive mode in sh
-*/
+ */
 void interactive_mode(void)
 {
-if (isatty(STDIN_FILENO))
+	int t;
+
+	t = isatty(STDIN_FILENO);
+	if (t == 1)
 	{
 		printf("$ ");
 		fflush(stdout);
