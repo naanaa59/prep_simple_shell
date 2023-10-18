@@ -5,7 +5,7 @@
  *
  * @s: the string to convert
  *
- * Return: int value of the string
+ * Return: int value of the string.
  */
 int _atoi(char *s)
 {
@@ -33,7 +33,7 @@ int _atoi(char *s)
  *
  * @s: given string
  *
- * Return: the length of the string
+ * Return: the length of the string.
  */
 
 int _strlen(char *s)
@@ -51,7 +51,7 @@ int _strlen(char *s)
  *
  * @str: the given string to print
  *
- * @std: the standard output
+ * @std: the standard output.
  */
 void _puts(int std, char *str)
 {
@@ -69,7 +69,7 @@ void _puts(int std, char *str)
  *
  * @dest: the destination
  *
- * @src: the source
+ * @src: the source.
  *
  * Return: an array of strings
  */
