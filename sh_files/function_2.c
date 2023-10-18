@@ -55,7 +55,7 @@ int _isalpha(int c)
 	return (r);
 }
 /**
- * interractive_mode - create an interactive mode in sh
+ * interactive_mode - create an interactive mode in sh
  */
 void interactive_mode(void)
 {

@@ -3,6 +3,8 @@
  * print_number - prints an integers
  *
  * @n: the integer to be printed
+ *
+ * @std: standard
  */
 void print_number(int std, int n)
 {
@@ -29,6 +31,8 @@ void print_number(int std, int n)
  * @line: number of the line in sh
  *
  * @command: command name
+ *
+ * @prefix: message to print
  */
 
 void custom_perror(char *program_name, int line, char *prefix, char *command)
@@ -100,7 +104,7 @@ int _isalpha_string(char *arg)
 }
 
 /**
- * print_grid - prints a 2D array of char
+ * print_env - prints a 2D array of char
  *
  * @env: the 2D array of char to print
  *
@@ -127,7 +131,7 @@ void print_env(char **env)
 	{
 		_puts(1, env_cpy[i]);
 	}
-	_putchar(1, '\n');
+	/*_putchar(1, '\n');*/
 	for (i = 0; env_cpy[i]; i++)
 	{
 		free(env_cpy[i]);

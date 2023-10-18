@@ -22,9 +22,6 @@ int main(__attribute__((unused))int argc, char *argv[])
 	size_t len = 0;
 	ssize_t nread;
 	FILE *stream = stdin;
-	extern char **environ; 
-
-
 
 	interactive_mode();
 	while ((nread = getline(&command, &len, stream)) != -1)
@@ -51,18 +48,26 @@ int main(__attribute__((unused))int argc, char *argv[])
 		{
 			exit_command(argv, args, argCount, lineIndex, command, &status);
 		}
-		else if (args[0] != NULL && args[1] != NULL && args[2] != NULL &&  _strcmp(args[0], "setenv") == 0)
+		else if (args[0] != NULL && args[1] != NULL && args[2] != NULL
+				&&  _strcmp(args[0], "setenv") == 0)
 		{
 			setenv(args[1], args[2], 1);
 		}
-		else if (args[0] != NULL && args[1] != NULL && _strcmp(args[0], "unsetenv") == 0)
+		else if (args[0] != NULL && args[1] != NULL
+				&& _strcmp(args[0], "unsetenv") == 0)
 		{
 			unsetenv(args[1]);
 		}
-		else if (args[0] != NULL && _strcmp(args[0], "setenv") != 0  && _strcmp(args[0], "unsetenv") != 0)
+		else if (args[0] != NULL && _strcmp(args[0], "cd") == 0)
+		{
+			change_dir(args, argv[0], lineIndex, args[0]);
+		}
+		else if (args[0] != NULL && _strcmp(args[0], "setenv") != 0
+				&& _strcmp(args[0], "unsetenv") != 0 && _strcmp(args[0], "cd") != 0)
 		{
 			status = exec_command(args, environ, argv, lineIndex);
 		}
+
 		free_grid(args, argCount);
 		lineIndex++;
 		interactive_mode();

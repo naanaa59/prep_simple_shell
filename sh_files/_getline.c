@@ -15,11 +15,8 @@
  */
 ssize_t _getline(char **line, size_t *n, FILE *file)
 {
-
 	size_t buffer_size = 0;
 	ssize_t line_size;
-
-
 
 	if (line == NULL || n == NULL)
 	{	perror(" line or n are null ");
@@ -38,10 +35,7 @@ ssize_t _getline(char **line, size_t *n, FILE *file)
 	}
 	else
 		buffer_size = *n;
-	/*line_size = read(file, *line, buffer_size - 1);*/
 	fgets(*line, buffer_size, file);
-
-
 	line_size = _strlen(*line);
 	if (line_size > 0 && (*line)[line_size - 1] == '\n')
 	{
@@ -49,5 +43,4 @@ ssize_t _getline(char **line, size_t *n, FILE *file)
 		line_size--;
 	}
 	return (line_size);
-
 }
